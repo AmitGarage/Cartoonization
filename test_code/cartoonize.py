@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[7]:
-
-
 import os
 import cv2
 import numpy as np
@@ -12,8 +9,6 @@ import network
 import guided_filter
 from tqdm import tqdm
 
-
-# In[8]:
 
 
 def resize_crop(image):
@@ -28,8 +23,6 @@ def resize_crop(image):
     image = image[:h, :w, :]
     return image
 
-
-# In[1]:
 
 
 def cartoonize(load_folder, save_folder, model_path):
@@ -47,8 +40,9 @@ def cartoonize(load_folder, save_folder, model_path):
     #saver.restore(sess, tf.train.latest_checkpoint(model_path))
     name_list = os.listdir(load_folder)
     model_network = network.unet_generator()
-    model_network.load_state_dict(torch.load(model_path))
-    model_network.train()
+    #print(model_network)
+    model_network.load_state_dict(torch.load(model_path)['model_state_dict'])
+    model_network.eval()
     for name in tqdm(name_list):
         try:
             load_path = os.path.join(load_folder, name)
@@ -57,31 +51,26 @@ def cartoonize(load_folder, save_folder, model_path):
             image = resize_crop(image)
             batch_image = image.astype(np.float32)/127.5 - 1
             batch_image = np.expand_dims(batch_image, axis=0)
+            batch_image = torch.from_numpy(np.transpose(batch_image,(0,3,1,2)))
             #output = sess.run(final_out, feed_dict={input_photo: batch_image})
-            network_out = model_network(input_photo)
-            final_out = guided_filter.guided_filter(input_photo, network_out, r=1, eps=5e-3)
-            output = final_out
-            output = (np.squeeze(output)+1)*127.5
+            #print(model_network(torch.from_numpy(batch_image)))
+            network_out = model_network(batch_image)
+            final_out = guided_filter.guided_filter(batch_image, network_out, r=1, eps=5e-3)
+            final_out = final_out.detach().numpy()
+            final_out = np.transpose(final_out,(0,2,3,1))
+            #np.save('paper_Filter_output.npy',final_out)
+            #print(type(final_out),final_out.dtype)
+            output = (np.squeeze(final_out)+1)*127.5
             output = np.clip(output, 0, 255).astype(np.uint8)
             cv2.imwrite(save_path, output)
         except:
             print('cartoonize {} failed'.format(load_path))
 
 
-# In[2]:
-
-
 if __name__ == '__main__':
-    model_path = 'saved_models'
+    model_path = 'py_saved_models/test_model_weights.pt'
     load_folder = 'test_images'
     save_folder = 'cartoonized_images'
     if not os.path.exists(save_folder):
         os.mkdir(save_folder)
     cartoonize(load_folder, save_folder, model_path)
-
-
-# In[ ]:
-
-
-
-
