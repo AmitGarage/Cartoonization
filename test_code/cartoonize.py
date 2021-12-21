@@ -68,7 +68,7 @@ def cartoonize(load_folder, save_folder, model_path):
 
 
 if __name__ == '__main__':
-    model_path = 'py_saved_models/test_model_weights.pt'
+    model_path = 'py_saved_model/test_model_weights.pt'
     load_folder = 'test_images'
     save_folder = 'cartoonized_images'
     if not os.path.exists(save_folder):
