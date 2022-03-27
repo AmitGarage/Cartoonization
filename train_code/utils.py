@@ -16,21 +16,35 @@ import numpy as np
 import scipy.stats as st
 import torch
 
+torch.manual_seed(3)
+
 
 # In[2]:
 
 
 def color_shift(image1, image2, mode='uniform'):
-    b1, g1, r1 = torch.split(image1, split_size_or_sections=3, dim=3)
-    b2, g2, r2 = torch.split(image2, split_size_or_sections=3, dim=3)
+    #print(image1.shape)
+    test = torch.split(image1, split_size_or_sections=1, dim=1)
+    #print(len(test))
+    b1, g1, r1 = torch.split(image1, split_size_or_sections=1, dim=1)
+    #b1, r1, g1 = torch.split(image1, split_size_or_sections=1, dim=1)
+    b2, g2, r2 = torch.split(image2, split_size_or_sections=1, dim=1)
+    #b2, r2, g2 = torch.split(image2, split_size_or_sections=1, dim=1)
     if mode == 'normal':
         b_weight = torch.normal(size=[1], mean=0.114, std=0.1)
         g_weight = torch.normal(size=[1], mean=0.587, std=0.1)
         r_weight = torch.normal(size=[1], mean=0.299, std=0.1)
     elif mode == 'uniform':
-        b_weight = (torch.rand(1)*(0.214-0.014))+0.014
-        g_weight = (torch.rand(1)*(0.687-0.487))+0.487
-        r_weight = (torch.rand(1)*(0.399-0.199))+0.199
+        #b_weight = (torch.rand(1)*(0.214-0.014))+0.014
+        #b_weight = (torch.randint(14,214,(1,)))/1000
+        #g_weight = (torch.rand(1)*(0.687-0.487))+0.487
+        #g_weight = (torch.randint(487,687,(1,)))/1000
+        #r_weight = (torch.rand(1)*(0.399-0.199))+0.199
+        #r_weight = (torch.randint(199,399,(1,)))/1000
+        b_weight = 0.05863728
+        g_weight = 0.53163725
+        r_weight = 0.24363726
+        print(b_weight,g_weight,r_weight)
     output1 = (b_weight*b1+g_weight*g1+r_weight*r1)/(b_weight+g_weight+r_weight)
     output2 = (b_weight*b2+g_weight*g2+r_weight*r2)/(b_weight+g_weight+r_weight)
     return output1, output2
@@ -77,6 +91,8 @@ def label2rgb(label_field, image, kind='mix', bg_label=-1, bg_color=(0, 0, 0)):
 def color_ss_map(image, seg_num=200, power=1, 
                  color_space='Lab', k=10, sim_strategy='CTSF'):
     
+    image = image.detach().numpy()
+    image = np.transpose(image,(0,2,3,1))
     img_seg = segmentation.felzenszwalb(image, scale=k, sigma=0.8, min_size=100)
     img_cvtcolor = label2rgb(img_seg, image, kind='mix')
     img_cvtcolor = switch_color_space(img_cvtcolor, color_space)
@@ -99,6 +115,7 @@ def color_ss_map(image, seg_num=200, power=1,
     image = image/np.max(image)
     image = image*2 - 1
     
+    image = torch.from_numpy(np.transpose(image,(0,3,1,2)))
     return image
 
 
@@ -107,7 +124,8 @@ def color_ss_map(image, seg_num=200, power=1,
 
 def selective_adacolor(batch_image, seg_num=200, power=1):
     num_job = np.shape(batch_image)[0]
-    batch_out = Parallel(n_jobs=num_job)(delayed(color_ss_map)\(image, seg_num, power) for image in batch_image)
+    batch_out = Parallel(n_jobs=num_job)(delayed(color_ss_map)\
+                         (image, seg_num, power) for image in batch_image)
     return np.array(batch_out)
 
 
@@ -117,12 +135,19 @@ def selective_adacolor(batch_image, seg_num=200, power=1):
 def simple_superpixel(batch_image, seg_num=200):
     
     def process_slic(image):
+        image = image.detach().numpy()
+        #print("Process Slic")
+        #print(image.shape)
+        image = np.transpose(image,(1,2,0))
         seg_label = segmentation.slic(image, n_segments=seg_num, sigma=1,compactness=10, convert2lab=True)
-        image = color.label2rgb(seg_label, image, kind='mix')
+        image = label2rgb(seg_label, image, kind='mix')
+        #print(image.shape)
+        #image = torch.from_numpy(np.transpose(image,(2,0,1)))
+        #print(image.shape)
         return image
     
     num_job = np.shape(batch_image)[0]
-    batch_out = Parallel(n_jobs=num_job)(delayed(process_slic)\(image) for image in batch_image)
+    batch_out = Parallel(n_jobs=num_job)(delayed(process_slic)(image) for image in batch_image)
     return np.array(batch_out)
 
 

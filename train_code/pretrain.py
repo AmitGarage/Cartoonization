@@ -27,8 +27,8 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0"
 def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--patch_size", default = 256, type = int)
-    parser.add_argument("--batch_size", default = 1, type = int)     
-    parser.add_argument("--total_iter", default = 1, type = int)
+    parser.add_argument("--batch_size", default = 16, type = int)     
+    parser.add_argument("--total_iter", default = 150, type = int)
     parser.add_argument("--adv_train_lr", default = 2e-4, type = float)
     parser.add_argument("--gpu_fraction", default = 0.5, type = float)
     parser.add_argument("--save_dir", default = '/content/drive/MyDrive/Training_21122021/pretrain', type = str)
@@ -43,8 +43,19 @@ def arg_parser():
 
 def initalization( args ):
     Model = network.unet_generator()
+    #print(Model)
+    #Model.load_state_dict(torch.load('/content/drive/MyDrive/Training_21122021/test_model_weights.pt')['model_state_dict'])
     optim = torch.optim.Adam(Model.parameters(),args.adv_train_lr, betas=(0.5, 0.99))
-    
+    #weights = Model.state_dict()['conv1.weight']
+    #print(weights.shape)
+    #result_out = weights.detach().numpy()
+    #result_out = np.transpose(result_out,(2,3,1,0))
+    #np.save('paper_pretrain_weights_0.npy',result_out)
+    #weights = Model.state_dict()['conv2.weight']
+    #print(weights.shape)
+    #result_out = weights.detach().numpy()
+    #result_out = np.transpose(result_out,(2,3,1,0))
+    #np.save('paper_pretrain_weights_1.npy',result_out)
     return Model,optim
 
 
@@ -152,14 +163,22 @@ def train(args):
         photo_batch = torch.from_numpy(np.transpose(photo_batch,(0,3,1,2)))
         output = Model(photo_batch)
 
-        print(photo_batch.shape,output.shape)
+        #print(photo_batch.shape,output.shape)
+        result_out = output.detach().numpy()
+        result_out = np.transpose(result_out,(0,2,3,1))
+        np.save('paper_pretrain_out.npy',result_out)
         recon_loss = (torch.nn.functional.l1_loss(photo_batch, output)).mean()
-
+        
         recon_loss.backward()
+
+        r_loss = recon_loss
+
+        torch.save({'state_dict': Model.state_dict(), 'optimizer': optim.state_dict(),}, '/content/drive/MyDrive/Training_21122021/pretrain/pretrain_model_weights.pt')
             
         if np.mod(total_iter+1, 50) == 0:
 
-                print('Iter: {}, d_loss: {}, g_loss: {}, recon_loss: {}'.                        format(total_iter, d_loss, g_loss, r_loss))
+                print('pretrain, iter: {}, recon_loss: {}'.format(total_iter, r_loss))
+                torch.save({'epoch' : total_iter ,'state_dict': Model.state_dict(), 'optimizer': optim.state_dict(),}, '/content/drive/MyDrive/Training_21122021/pretrain/pretrain_epoch_model_weights.pt')
                 if np.mod(total_iter+1, 500 ) == 0:
                     #saver.save(sess, args.save_dir+'/saved_models/model',write_meta_graph=False, global_step=total_iter)
                      
@@ -177,12 +196,20 @@ def train(args):
                     photo_scenery = torch.from_numpy(np.transpose(photo_scenery,(0,3,1,2)))
                     output = Model(photo_scenery)
                     result_scenery = output
-                    
-                    utils.write_batch_image(result_face, args.save_dir+'/images',str(total_iter)+'_face_result.jpg', 4)
-                    utils.write_batch_image(photo_face, args.save_dir+'/images',str(total_iter)+'_face_photo.jpg', 4)
+                    result_face = result_face.detach().numpy()
+                    result_face = np.transpose(result_face,(0,2,3,1))
+                    photo_face = photo_face.detach().numpy()
+                    photo_face = np.transpose(photo_face,(0,2,3,1))
+                    result_scenery = result_scenery.detach().numpy()
+                    result_scenery = np.transpose(result_scenery,(0,2,3,1))
+                    photo_scenery = photo_scenery.detach().numpy()
+                    photo_scenery = np.transpose(photo_scenery,(0,2,3,1))
+                    #total_iter=1
+                    utils.write_batch_image(result_face, args.save_dir+'/images',str(total_iter)+'_face_result.jpg', 1)
+                    utils.write_batch_image(photo_face, args.save_dir+'/images',str(total_iter)+'_face_photo.jpg', 1)
 
-                    utils.write_batch_image(result_scenery, args.save_dir+'/images',str(total_iter)+'_scenery_result.jpg', 4)
-                    utils.write_batch_image(photo_scenery, args.save_dir+'/images',str(total_iter)+'_scenery_photo.jpg', 4)
+                    utils.write_batch_image(result_scenery, args.save_dir+'/images',str(total_iter)+'_scenery_result.jpg', 1)
+                    utils.write_batch_image(photo_scenery, args.save_dir+'/images',str(total_iter)+'_scenery_photo.jpg', 1)
 
 
 # In[7]:
