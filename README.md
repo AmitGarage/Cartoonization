@@ -1,5 +1,5 @@
 # White Box Cartoonization using Pytorch
-Real world images conversion to cartoonized images using White Box Cartoonization algorithm and same implemented in Pytorch
+Pytorch implementation for CVPR2020 paper “Learning to Cartoonize Using White-box Cartoon Representations”.
 
 # Reference to original paper and code ( Tensorflow V1 ) by the creator
 [CVPR2020]Learning to Cartoonize Using White-box Cartoon Representations
@@ -39,6 +39,8 @@ Real world images conversion to cartoonized images using White Box Cartoonizatio
 - Total loss function - Ltotal = λ1 ∗ Lsurface + λ2 ∗ Ltexture + λ3 ∗ Lstructure + λ4 ∗ Lcontent + λ5 ∗ Ltv
 - We at first pre-train the generator with the content loss for 50000 iterations, and then jointly optimize the GAN based framework. Training is stopped after 100000 iterations or on convergency.
 - **Evalutaion Metrics** - Frechet Inception Distance summarizes the distance between the feature vectors for real and generated images in the same domain. d^2 = ||mu_1 – mu_2||^2 + Tr(C_1 + C_2 – 2 * sqrt(C_1*C_2)) ."mu_1" and "mu_2" refer to the feature-wise mean of the real and generated images. C_1 and C_2 are the covariance matrix for the real and generated feature vectors. Tr refers to the trace linear algebra operation, e.g. the sum of the elements along the main diagonal of the square matrix.
+
+<img src="Image/Model.png" width="1000px"/>
 
 ## License
 - Copyright (C) Xinrui Wang All rights reserved. Licensed under the CC BY-NC-SA 4.0 
