@@ -1,0 +1,44 @@
+        Layer (type)               Output Shape         Param #       Layer configuration
+========================================================================================================================================== 
+            Conv2d-1         [-1, 32, 256, 256]           4,736       Conv2d(3, 32, kernel_size=(7, 7), stride=(1, 1), padding=same)
+         LeakyReLU-2         [-1, 32, 256, 256]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+            Conv2d-3         [-1, 32, 128, 128]           9,248       Conv2d(32, 32, kernel_size=(3, 3), stride=(2, 2), padding=same)
+         LeakyReLU-4         [-1, 32, 128, 128]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+            Conv2d-5         [-1, 64, 128, 128]          18,496       Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=same)
+         LeakyReLU-6         [-1, 64, 128, 128]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+            Conv2d-7           [-1, 64, 64, 64]          36,928       Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), padding=same)
+         LeakyReLU-8           [-1, 64, 64, 64]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+            Conv2d-9          [-1, 128, 64, 64]          73,856       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-10          [-1, 128, 64, 64]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+           Conv2d-11          [-1, 128, 64, 64]         147,584       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-12          [-1, 128, 64, 64]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+           Conv2d-13          [-1, 128, 64, 64]         147,584       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        res_block-14          [-1, 128, 64, 64]               0       
+           Conv2d-15          [-1, 128, 64, 64]         147,584       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-16          [-1, 128, 64, 64]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+           Conv2d-17          [-1, 128, 64, 64]         147,584       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        res_block-18          [-1, 128, 64, 64]               0       
+           Conv2d-19          [-1, 128, 64, 64]         147,584       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-20          [-1, 128, 64, 64]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+           Conv2d-21          [-1, 128, 64, 64]         147,584       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        res_block-22          [-1, 128, 64, 64]               0       
+           Conv2d-23          [-1, 128, 64, 64]         147,584       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-24          [-1, 128, 64, 64]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+           Conv2d-25          [-1, 128, 64, 64]         147,584       Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        res_block-26          [-1, 128, 64, 64]               0       
+           Conv2d-27           [-1, 64, 64, 64]          73,792       Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-28           [-1, 64, 64, 64]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+      Interpolate-29         [-1, 64, 128, 128]               0       Interpolate(scale_factor=2, mode='bilinear')
+           Conv2d-30         [-1, 64, 128, 128]          36,928       Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-31         [-1, 64, 128, 128]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+           Conv2d-32         [-1, 32, 128, 128]          18,464       Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-33         [-1, 32, 128, 128]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+      Interpolate-34         [-1, 32, 256, 256]               0       Interpolate(scale_factor=2, mode='bilinear')
+           Conv2d-35         [-1, 32, 256, 256]           9,248       Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=same)
+        LeakyReLU-36         [-1, 32, 256, 256]               0       LeakyReLU(negative_slope=0.2, inplace=True)
+           Conv2d-37          [-1, 3, 256, 256]           4,707       Conv2d(32, 3, kernel_size=(7, 7), stride=(1, 1), padding=same)
+========================================================================================================================================== 
+Total params: 1,467,075                                               
+Trainable params: 1,467,075                                           
+Non-trainable params: 0                                               
+------------------------------------------------------------------------------------------------------------------------------------------
