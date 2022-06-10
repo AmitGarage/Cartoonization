@@ -42,6 +42,10 @@ Pytorch implementation for CVPR2020 paper “Learning to Cartoonize Using White-
 
 <img src="Image/Model.png" width="1000px"/>
 
+### Generator model learnable parameters
+
+<img src="Image/Generator_config.png" width="1000px"/>
+
 ## License
 - Copyright (C) Xinrui Wang All rights reserved. Licensed under the CC BY-NC-SA 4.0 
 - license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
