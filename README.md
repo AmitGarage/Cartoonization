@@ -1,4 +1,4 @@
-# White Box Cartoonization using Pytorch
+# White Box Cartoonization implementation in Pytorch
 Pytorch implementation for CVPR2020 paper “Learning to Cartoonize Using White-box Cartoon Representations”.
 
 # Reference to original paper and code ( Tensorflow V1 ) by the creator
@@ -45,6 +45,14 @@ Pytorch implementation for CVPR2020 paper “Learning to Cartoonize Using White-
 ### Generator model learnable parameters
 
 <img src="Image/Generator_config.png" width="1000px"/>
+
+### Texture Discriminator model learnable parameters
+
+<img src="Image/Discriminator_Texture_config.png" width="1000px"/>
+
+### Surface Discriminator model learnable parameters
+
+<img src="Image/Discriminator_Surface_config.png" width="1000px"/>
 
 ## License
 - Copyright (C) Xinrui Wang All rights reserved. Licensed under the CC BY-NC-SA 4.0 
