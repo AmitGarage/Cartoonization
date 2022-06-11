@@ -17,7 +17,7 @@ Pytorch implementation for CVPR2020 paper “Learning to Cartoonize Using White-
     - Extract a segmentation map from the input image and then apply an adaptive coloring algorithm ( Effectively enhances the contrast of images and reduces hazing effect ) on each segmented regions to generate the structure representation. 
     - Motivated to emulate the celluloid cartoon style, which is featured by clear boundaries and sparse color blocks. Super-pixel segmentation groups spatially connected pixels in an image with similar color or gray level. 
     - In this work, we follow the felzenszwalb algorithm to develop a cartoon-oriented segmentation method to achieve a learnable structure representation. Superpixel algorithms only consider the similarity of pixels and ignore semantic information, we further introduce selective search to merge segmented regions and extract a sparse segmentation map. 
-    - **Loss Function** - Lstructure = ||VGGn(G(Ip)) − VGGn(Fst(G(Ip)))||. **Fst** - Structure representation extraction , **Ip** - Input image , **VGGn** - Pretrained VGG16 model , **G** - Generator
+    - **Loss Function** - Lstructure = ||VGGn(G(Ip)) − VGGn(Fst(G(Ip)))||. **Fst** - Structure representation extraction , **Ip** - Input image , **VGGn** - Pretrained VGG19 model , **G** - Generator
 3. **Texture representation** 
     - It reflects highfrequency texture, contours, and details in cartoon images.  The input image is converted to a single-channel intensity map , where the color and luminance are removed and relative pixel intensity is preserved. 
     - Motivated by a cartoon painting method where artists firstly draw a line sketch with contours and details, and then apply color on it. 
@@ -29,12 +29,12 @@ Pytorch implementation for CVPR2020 paper “Learning to Cartoonize Using White-
 ### Paper Implementation
 - In this paper, we adopt an unpaired image-to-image translation framework for image cartoonization. We decompose images into several representations, which enforces network to learn different features with separate objectives, making the learning process controllable and tunable.
 - A GAN framework with a generator G and two discriminators Ds and Dt is proposed, where Ds aims to distinguish between surface representation extracted from model outputs and cartoons, and Dt is used to distinguish between texture representation extracted from outputs and cartoons.
-- Pre-trained VGG16 network is used to extract high-level features and to impose spatial constrain on global contents between extracted structure representations and outputs, and also between input photos and outputs. Weight for each component can be adjusted in the loss function, which allows users to control the output style and adapt the model to diverse use cases.
+- Pre-trained VGG19 network is used to extract high-level features and to impose spatial constrain on global contents between extracted structure representations and outputs, and also between input photos and outputs. Weight for each component can be adjusted in the loss function, which allows users to control the output style and adapt the model to diverse use cases.
 - Loss Functions
   - Lsurface(G, Ds) = logDs(Fdgf (Ic, Ic)) + log(1 − Ds(Fdgf (G(Ip), G(Ip))))
   - Lstructure = ||VGGn(G(Ip)) − VGGn(Fst(G(Ip)))||
   - Ltexture(G, Dt) = logDt(Frcs(Ic)) + log(1 − Dt(Frcs(G(Ip))))
-  - Lcontent = ||VGGn(G(Ip)) − VGGn(Ip)|| .The content loss Lcontent is used to ensure that the cartoonized results and input photos are semantically invariant, and the sparsity of L1 norm allows for local features to be cartoonized. Similar to the structure loss, it is calculated on pre-trained VGG16 feature space.
+  - Lcontent = ||VGGn(G(Ip)) − VGGn(Ip)|| .The content loss Lcontent is used to ensure that the cartoonized results and input photos are semantically invariant, and the sparsity of L1 norm allows for local features to be cartoonized. Similar to the structure loss, it is calculated on pre-trained VGG19 feature space.
   - Ltv = (1/(H ∗ W ∗ C))*||Delta(G(Ip)) + Delta(G(Ip))|| . The total-variation loss Ltv is used to impose spatial smoothness on generated images. It also reduces highfrequency noises such as salt-and-pepper noise.
 - Total loss function - Ltotal = λ1 ∗ Lsurface + λ2 ∗ Ltexture + λ3 ∗ Lstructure + λ4 ∗ Lcontent + λ5 ∗ Ltv
 - We at first pre-train the generator with the content loss for 50000 iterations, and then jointly optimize the GAN based framework. Training is stopped after 100000 iterations or on convergency.
